@@ -2,10 +2,9 @@ import cv2 as cv
 import numpy as np
 import time
 import control_motor
+import RPi.GPIO as GPIO
+from time import sleep
 
-CONTROLLER = control_motor.Motoare()
-CONTROLLER.__init__()
-CONTROLLER.stop()
 cap = cv.VideoCapture(0)
 lower_hsv = np.array([28,47,47])
 high_hsv = np.array([43,255,255])
@@ -27,6 +26,11 @@ while True:
         thresh = cv.dilate(thresh ,None , iterations=5)
         x_camera, _ = center
         contours, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+
+        if len(contours) == 0:
+            print("INTRU AICI")
+            control_motor.stop()
+
         for contour in contours:
             (x, y), radius = cv.minEnclosingCircle(contour)
             center = (int(x), int(y))
@@ -35,29 +39,28 @@ while True:
             cv.circle(image,center,radius=2,color=(255,0,0),thickness=2)
             if x_camera >= camera_center - 20 and x_camera <= camera_center + 20:
                 print("Mergi in fata")
-                CONTROLLER.inainte()
+                control_motor.forward(50)
             elif x_camera < camera_center - 20:
                 print("Fa stanga")
-                CONTROLLER.stanga()
+                control_motor.left(50)
             elif x_camera > camera_center + 20:
                 print("Fa dreapta")
-                CONTROLLER.dreapta()
+                control_motor.right(50)
             break
 
-
-        print(x_camera)
-        cv.imshow("kek", image)
-        #cv.imshow("kek", thresh)
+        # cv.imshow("kek", image)
+        cv.imshow("kek", thresh)
 
 
 
         if cv.waitKey(10) & 0xFF == ord('q'):
-            CONTROLLER.stop()
+            control_motor.stop()
+            GPIO.cleanup()
             break
     else:
         print("Image is none")
         break
 
-
 image.release()
 cv.destroyAllWindows()
+
