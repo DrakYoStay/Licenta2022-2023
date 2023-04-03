@@ -14,10 +14,10 @@ center = (0,0)
 
 while True:
     ret, image = cap.read()
-    time.sleep(1/30)
+    time.sleep(1/60)
     if image is not None:
         image = cv.resize(image,(300,300))
-        image_blurred = cv.GaussianBlur(image,(17,17),0)
+        image_blurred = cv.GaussianBlur(image,(11,11),0)
 
         imageHSV = cv.cvtColor(image_blurred,cv.COLOR_BGR2HSV)
 
@@ -31,8 +31,8 @@ while True:
             (x, y), radius = cv.minEnclosingCircle(contour)
             center = (int(x), int(y))
             radius = int(radius)
-            cv.circle(image, center, radius, (0, 255, 0), 2)
-            cv.circle(image,center,radius=2,color=(255,0,0),thickness=2)
+            cv.circle(image_blurred, center, radius, (0, 255, 0), 2)
+            cv.circle(image_blurred,center,radius=2,color=(255,0,0),thickness=2)
             if x_camera >= camera_center - 20 and x_camera <= camera_center + 20:
                 print("Mergi in fata")
                 CONTROLLER.inainte()
@@ -46,8 +46,8 @@ while True:
 
 
         print(x_camera)
-        # cv.imshow("kek", image)
-        cv.imshow("kek", thresh)
+        cv.imshow("kek", image_blurred)
+        #cv.imshow("kek", thresh)
 
 
 
