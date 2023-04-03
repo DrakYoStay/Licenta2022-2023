@@ -47,7 +47,7 @@ while True:
 
 
         print(x_camera)
-        cv.imshow("kek", image_blurred)
+        cv.imshow("kek", image)
         #cv.imshow("kek", thresh)
 
 
