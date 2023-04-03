@@ -10,6 +10,8 @@ lower_hsv = np.array([28,47,47])
 high_hsv = np.array([43,255,255])
 camera_center = 150
 center = (0,0)
+time.sleep(2)
+
 
 while True:
     ret, image = cap.read()
@@ -37,19 +39,19 @@ while True:
             radius = int(radius)
             cv.circle(image, center, radius, (0, 255, 0), 2)
             cv.circle(image,center,radius=2,color=(255,0,0),thickness=2)
-            if x_camera >= camera_center - 20 and x_camera <= camera_center + 20:
+            if x_camera >= camera_center - 70 and x_camera <= camera_center + 70:
                 print("Mergi in fata")
                 control_motor.forward(20)
-            elif x_camera < camera_center - 20:
+            elif x_camera < camera_center - 70:
                 print("Fa stanga")
                 control_motor.left(20)
-            elif x_camera > camera_center + 20:
+            elif x_camera > camera_center + 70:
                 print("Fa dreapta")
                 control_motor.right(20)
             break
 
-        # cv.imshow("kek", image)
-        cv.imshow("kek", thresh)
+        cv.imshow("kek", image)
+        #cv.imshow("kek", thresh)
 
 
 
