@@ -28,9 +28,6 @@ while True:
         thresh = cv.dilate(thresh ,None , iterations=2)
         x_camera, _ = center
         contours, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-        if len(contours) == 0:
-            CONTROLLER.stop()
-
         for contour in contours:
             (x, y), radius = cv.minEnclosingCircle(contour)
             center = (int(x), int(y))
