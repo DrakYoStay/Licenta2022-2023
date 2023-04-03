@@ -13,17 +13,17 @@ center = (0,0)
 
 while True:
     ret, image = cap.read()
-    time.sleep(1/30)
+    time.sleep(1/60)
     if image is not None:
         image = cv.resize(image,(300,300))
-        image_blurred = cv.GaussianBlur(image,(17,17),0)
+        image_blurred = cv.GaussianBlur(image,(11,11),0)
 
         imageHSV = cv.cvtColor(image_blurred,cv.COLOR_BGR2HSV)
 
 
         thresh = cv.inRange(imageHSV,lower_hsv,high_hsv)
-        thresh = cv.erode(thresh ,None , iterations=5)
-        thresh = cv.dilate(thresh ,None , iterations=5)
+        thresh = cv.erode(thresh ,None , iterations=2)
+        thresh = cv.dilate(thresh ,None , iterations=2)
         x_camera, _ = center
         contours, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
@@ -39,13 +39,13 @@ while True:
             cv.circle(image,center,radius=2,color=(255,0,0),thickness=2)
             if x_camera >= camera_center - 20 and x_camera <= camera_center + 20:
                 print("Mergi in fata")
-                control_motor.forward(50)
+                control_motor.forward(20)
             elif x_camera < camera_center - 20:
                 print("Fa stanga")
-                control_motor.left(50)
+                control_motor.left(20)
             elif x_camera > camera_center + 20:
                 print("Fa dreapta")
-                control_motor.right(50)
+                control_motor.right(20)
             break
 
         # cv.imshow("kek", image)
