@@ -5,47 +5,64 @@ import time
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-motor1a = 17
-motor1b = 27
-motor2a = 22
-motor2b = 23
+motor_stanga_fata = 17
+motor_stanga_spate = 27
+motor_dreapta_fata = 22
+motor_dreapta_spate = 23
 
 
-GPIO.setup(motor1a, GPIO.OUT)
-GPIO.setup(motor1b, GPIO.OUT)
-GPIO.setup(motor2a, GPIO.OUT)
-GPIO.setup(motor2b, GPIO.OUT)
-motor1 = GPIO.PWM(motor1a, 20)
-motor2 = GPIO.PWM(motor2a, 20)
-motor1.start(0)
-motor2.start(0)
+GPIO.setup(motor_stanga_fata, GPIO.OUT)
+GPIO.setup(motor_stanga_spate, GPIO.OUT)
+GPIO.setup(motor_dreapta_fata, GPIO.OUT)
+GPIO.setup(motor_dreapta_spate, GPIO.OUT)
+motor_stanga_fwd = GPIO.PWM(motor_stanga_fata, 100)
+motor_stanga_bwd = GPIO.PWM(motor_stanga_spate, 100)
+motor_dreapta_fwd = GPIO.PWM(motor_dreapta_fata, 100)
+motor_dreapta_bwd = GPIO.PWM(motor_dreapta_spate, 100)
+motor_stanga_fwd.start(0)
+motor_dreapta_fwd.start(0)
+motor_stanga_bwd.start(0)
+motor_dreapta_bwd.start(0)
 
 
 def forward(speed):
-    motor1.ChangeDutyCycle(speed)
-    motor2.ChangeDutyCycle(speed)
-    GPIO.output(motor1b, GPIO.LOW)
-    GPIO.output(motor2b, GPIO.LOW)
+    GPIO.output(motor_stanga_spate, GPIO.LOW)
+    GPIO.output(motor_dreapta_spate, GPIO.LOW)
+    motor_stanga_fwd.ChangeDutyCycle(speed)
+    motor_dreapta_fwd.ChangeDutyCycle(speed)
+    motor_stanga_bwd.ChangeDutyCycle(0)
+    motor_dreapta_bwd.ChangeDutyCycle(0)
 
 def backward(speed):
-    motor1.ChangeDutyCycle(speed)
-    motor2.ChangeDutyCycle(speed)
-    GPIO.output(motor1a, GPIO.LOW)
-    GPIO.output(motor2a, GPIO.LOW)
+    GPIO.output(motor_stanga_fata, GPIO.LOW)
+    GPIO.output(motor_dreapta_fata, GPIO.LOW)
+    motor_stanga_fwd.ChangeDutyCycle(0)
+    motor_dreapta_fwd.ChangeDutyCycle(0)
+    motor_stanga_bwd.ChangeDutyCycle(speed)
+    motor_dreapta_bwd.ChangeDutyCycle(speed)
+
+
 
 def left(speed):
-    motor1.ChangeDutyCycle(speed)
-    motor2.ChangeDutyCycle(speed)
-    GPIO.output(motor1b, GPIO.HIGH)
-    GPIO.output(motor2b, GPIO.LOW)
+    GPIO.output(motor_stanga_spate, GPIO.LOW)
+    GPIO.output(motor_dreapta_fata, GPIO.LOW)
+    motor_stanga_fwd.ChangeDutyCycle(0)
+    motor_dreapta_fwd.ChangeDutyCycle(speed)
+    motor_stanga_bwd.ChangeDutyCycle(speed)
+    motor_dreapta_bwd.ChangeDutyCycle(0)
+
 
 def right(speed):
-    motor1.ChangeDutyCycle(speed)
-    motor2.ChangeDutyCycle(speed)
-    GPIO.output(motor1b, GPIO.LOW)
-    GPIO.output(motor2b, GPIO.HIGH)
+    GPIO.output(motor_stanga_fata, GPIO.LOW)
+    GPIO.output(motor_dreapta_spate, GPIO.LOW)
+    motor_stanga_fwd.ChangeDutyCycle(speed)
+    motor_dreapta_fwd.ChangeDutyCycle(0)
+    motor_stanga_bwd.ChangeDutyCycle(0)
+    motor_dreapta_bwd.ChangeDutyCycle(speed)
 
 def stop():
-    motor1.ChangeDutyCycle(0)
-    motor2.ChangeDutyCycle(0)
+    motor_stanga_fwd.ChangeDutyCycle(0)
+    motor_dreapta_fwd.ChangeDutyCycle(0)
+    motor_stanga_bwd.ChangeDutyCycle(0)
+    motor_dreapta_bwd.ChangeDutyCycle(0)
 
