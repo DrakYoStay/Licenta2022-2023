@@ -1,26 +1,59 @@
-import time
 import RPi.GPIO as GPIO
+import time
 
-GPIO.setmode(GPIO.BCM)
-
+# Set the GPIO pin that the servo motor is connected to
 servo_pin = 18
+
+# Set the frequency of the PWM signal (in Hz)
+pwm_freq = 50
+
+# Set the duty cycle for the minimum and maximum positions of the servo motor (in %)
+servo_min_duty = 2.5
+servo_max_duty = 12.5
+
+# Initialize the GPIO pins
+GPIO.setmode(GPIO.BCM)
 GPIO.setup(servo_pin, GPIO.OUT)
 
-servo = GPIO.PWM(servo_pin, 50) # set the PWM frequency to 50 Hz
-servo.start(0) # start the PWM signal with 0 duty cycle (neutral position)
+# Create a PWM object
+pwm = GPIO.PWM(servo_pin, pwm_freq)
 
+# Start the PWM signal
+pwm.start(0)
+
+# Function to move the servo motor to a specific angle
+def set_servo_angle(angle):
+    # Convert the angle to a duty cycle
+    duty_cycle = servo_min_duty + (angle / 180.0) * (servo_max_duty - servo_min_duty)
+    
+    # Move the servo motor to the desired angle
+    pwm.ChangeDutyCycle(duty_cycle)
+    
+    # Wait for the servo motor to move
+    time.sleep(0.5)
+
+# Move the servo motor from 0 degrees to 180 degrees and back to 0 degrees
 try:
     while True:
-        for angle in range(0, 181, 10):
-            duty_cycle = angle / 18.0 + 2.5 # convert angle to duty cycle (2.5 - 12.5)
-            servo.ChangeDutyCycle(duty_cycle)
-            time.sleep(0.05)
+        # Move the servo motor to 0 degrees
+        set_servo_angle(0)
+        
+        # Wait for a second
+        time.sleep(1)
+        
+        # Move the servo motor to 180 degrees
+        set_servo_angle(180)
+        
+        # Wait for a second
+        time.sleep(1)
+        
+        # Move the servo motor to 0 degrees
+        set_servo_angle(0)
+        
+        # Wait for a second
+        time.sleep(1)
 
-        for angle in range(180, -1, -10):
-            duty_cycle = angle / 18.0 + 2.5 # convert angle to duty cycle (2.5 - 12.5)
-            servo.ChangeDutyCycle(duty_cycle)
-            time.sleep(0.05)
-
+# Clean up the GPIO pins when the program is interrupted
 except KeyboardInterrupt:
-    servo.stop()
+    pwm.stop()
     GPIO.cleanup()
