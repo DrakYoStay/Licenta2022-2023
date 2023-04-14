@@ -41,13 +41,13 @@ while True:
             cv.circle(image,center,radius=2,color=(255,0,0),thickness=2)
             if x_camera >= camera_center - 70 and x_camera <= camera_center + 70:
                 print("Mergi in fata")
-                control_motor.forward(30)
+                control_motor.forward(20)
             elif x_camera < camera_center - 70:
                 print("Fa stanga")
-                control_motor.left(30)
+                control_motor.left(20)
             elif x_camera > camera_center + 70:
                 print("Fa dreapta")
-                control_motor.right(30)
+                control_motor.right(20)
             break
 
         cv.imshow("kek", image)
