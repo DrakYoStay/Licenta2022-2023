@@ -114,6 +114,7 @@ DROP_OFF = False
 
 camera_matrix = np.array([[1000, 0, 500], [0, 1000, 500], [0, 0, 1]])
 dist_coeffs = np.array([0, 0, 0, 0])
+CICLU_CAUTARE = False
 
 while SWITCH_STATE == True:
     ret, image = cap.read()
@@ -125,6 +126,7 @@ while SWITCH_STATE == True:
         gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         corners, ids, _ = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
         if ids is not None:
+            CICLU_CAUTARE = True
             # Draw the detected marker(s) and label them with their ID(s)
             aruco.drawDetectedMarkers(image, corners)
             for i, marker_id in enumerate(ids):
@@ -142,19 +144,20 @@ while SWITCH_STATE == True:
                     label = 'ID: {}, Distance: {:.2f} meters'.format(marker_id, distance)
                     cv.putText(image, label, tuple(corners[i][0][0].astype(int)), cv.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2, cv.LINE_AA)
                     if aruco_center >= camera_center - 100 and aruco_center <= camera_center + 100:
-                        control_motor.forward(30)
+                        control_motor.forward(40)
                         if distance < 0.4:
                             print(distance)
                             control_motor.stop()
                             print("am ajuns unde trebuie")
                     elif aruco_center < camera_center - 100:
                         print("Fa stanga")
-                        control_motor.left(30)
+                        control_motor.left(40)
                     elif aruco_center > camera_center + 100:
                         print("Fa dreapta")
-                        control_motor.right(30)
-        else:
+                        control_motor.right(40)
+        elif ids is None and CICLU_CAUTARE == False:
             control_motor.right(40)
+            
         cv.imshow("keklwl",image)
         
         
