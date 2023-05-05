@@ -110,7 +110,7 @@ parameters = aruco.DetectorParameters_create()
 parameters.adaptiveThreshConstant = 10
 camera_center = 200
 marker_size = 0.05
-DROP_OFF = False
+DROPPED_BALL = False
 
 camera_matrix = np.array([[1000, 0, 500], [0, 1000, 500], [0, 0, 1]])
 dist_coeffs = np.array([0, 0, 0, 0])
@@ -131,7 +131,7 @@ while SWITCH_STATE == True:
             aruco.drawDetectedMarkers(image, corners)
             for i, marker_id in enumerate(ids):
             # Calculate the distance to the marker
-                if marker_id == 0:
+                if marker_id == 0 and DROPPED_BALL == False:
                     for i in range(len(ids)):
                         # Get the corner coordinates for this marker
                         marker_corners = corners[i][0]
@@ -149,12 +149,49 @@ while SWITCH_STATE == True:
                             print(distance)
                             control_motor.stop()
                             print("am ajuns unde trebuie")
+                            #servoradarada
+                            DROPPED_BALL = True
+                            time.sleep(2)
+                            control_motor.backward(40)
+                            time.sleep(2)
                     elif aruco_center < camera_center - 100:
                         print("Fa stanga")
                         control_motor.left(40)
                     elif aruco_center > camera_center + 100:
                         print("Fa dreapta")
                         control_motor.right(40)
+                elif marker_id == 1 and DROPPED_BALL == True:
+                    for i in range(len(ids)):
+                        # Get the corner coordinates for this marker
+                        marker_corners = corners[i][0]
+
+                        # Calculate the center point of the marker
+                        aruco_center = int(np.mean(marker_corners[:, 0]))
+                    print(aruco_center)
+                    rvec, tvec, _ = aruco.estimatePoseSingleMarkers(corners[i], marker_size, camera_matrix, dist_coeffs)
+                    distance = np.linalg.norm(tvec)
+                    label = 'ID: {}, Distance: {:.2f} meters'.format(marker_id, distance)
+                    cv.putText(image, label, tuple(corners[i][0][0].astype(int)), cv.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2, cv.LINE_AA)
+                    if aruco_center >= camera_center - 100 and aruco_center <= camera_center + 100:
+                        control_motor.forward(40)
+                        if distance < 0.4:
+                            print(distance)
+                            control_motor.stop()
+                            print("am ajuns unde trebuie")
+                            time.sleep(1)
+                            print("ma sinucid")
+                            GPIO.cleanup()                                                        
+                            cap.release()
+                            cv.destroyAllWindows()
+                    elif aruco_center < camera_center - 100:
+                        print("Fa stanga")
+                        control_motor.left(40)
+                    elif aruco_center > camera_center + 100:
+                        print("Fa dreapta")
+                        control_motor.right(40)
+                        
+                else:
+                    control_motor.right(40)
         elif ids is None and CICLU_CAUTARE == False:
             control_motor.right(40)
             
