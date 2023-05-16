@@ -53,11 +53,7 @@ while SWITCH_STATE == False:
                 print("180 degree")
                 # Wait for a second
                 time.sleep(5)
-                
-                # Move the servo motor to 180 degrees
-                pwm.ChangeDutyCycle(2)
-                print("0 degree")
-                
+            
         for contour in contours:
             (x, y), radius = cv.minEnclosingCircle(contour)
             center = (int(x), int(y))
@@ -81,12 +77,6 @@ while SWITCH_STATE == False:
                 print("180 degree")
                 # Wait for a second
                 time.sleep(5)
-                
-                # Move the servo motor to 180 degrees
-                pwm.ChangeDutyCycle(2)
-                print("0 degree")
-
-
             break
 
         cv.imshow("kek", image)
@@ -96,6 +86,7 @@ while SWITCH_STATE == False:
 
         if cv.waitKey(10) & 0xFF == ord('q'):
             control_motor.stop()
+            GPIO.cleanup()
             break
     else:
         print("Image is none")
@@ -122,7 +113,7 @@ while SWITCH_STATE == True:
     image = cv.flip(image,1)
     time.sleep(1/60)
     if image is not None:
-        image = cv.resize(image,(400,400))
+        image = cv.resize(image,(500,500))
         gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         corners, ids, _ = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
         if ids is not None:
@@ -145,11 +136,12 @@ while SWITCH_STATE == True:
                     cv.putText(image, label, tuple(corners[i][0][0].astype(int)), cv.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2, cv.LINE_AA)
                     if aruco_center >= camera_center - 100 and aruco_center <= camera_center + 100:
                         control_motor.forward(40)
-                        if distance < 0.4:
-                            print(distance)
+                        print(distance)
+                        if distance < 0.65:
                             control_motor.stop()
                             print("am ajuns unde trebuie")
-                            #servoradarada
+                            pwm.ChangeDutyCycle(2)
+                            print("0 degree")
                             DROPPED_BALL = True
                             time.sleep(2)
                             control_motor.backward(40)
@@ -174,7 +166,7 @@ while SWITCH_STATE == True:
                     cv.putText(image, label, tuple(corners[i][0][0].astype(int)), cv.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2, cv.LINE_AA)
                     if aruco_center >= camera_center - 100 and aruco_center <= camera_center + 100:
                         control_motor.forward(40)
-                        if distance < 0.4:
+                        if distance < 0.5:
                             print(distance)
                             control_motor.stop()
                             print("am ajuns unde trebuie")
